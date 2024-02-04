@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 from tqdm import tqdm
-from sklearn.linear_model import LinearRegression
 
 class Planeta:
     
