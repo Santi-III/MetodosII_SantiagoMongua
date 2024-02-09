@@ -27,8 +27,11 @@ class Particle:
         self.F = np.zeros_like(self.R)
         
         self.P = np.zeros_like(self.R)
+        self.L = np.zeros_like(self.R)
         # Fisica
         self.VEk = np.zeros(len(t))
+        self.Ep = 0.
+        self.VEp = np.zeros(len(t))
         
     def Evolution(self,i):
         
@@ -47,7 +50,10 @@ class Particle:
         self.V[i] = self.v
         self.P[i] = self.m*self.v
         self.F[i] = self.f
+        self.L[i] = np.cross(self.r,self.m*self.v)
         self.VEk[i] = 0.5*self.m*np.dot(self.v,self.v)
+        Ep = self.m * self.g * self.r[1]
+        self.VEp[i] = Ep
     
     # Getter
     def GetPosition(self,scale=1):
@@ -63,7 +69,13 @@ class Particle:
         return self.P[::scale]
     
     def GetKineticEnergy(self,scale=1):
-        return self.VEk[::scale] 
+        return self.VEk[::scale]
+    
+    def GetPotentialEnergy(self,scale=1):
+        return self.VEp[::scale]
+    
+    def GetAngularMomentum(self,scale=1):
+        return self.L[::scale]
     
     def CheckLimits(self):
         for i in range(2):
@@ -128,10 +140,23 @@ def Update(i):
 KE = part.GetKineticEnergy(scale)
 print(part.GetForce(scale)[:,0])
 print(part.GetForce(scale)[:,1])
-#ax1.set_title(r'Total kinetic Energy: {:.3f}'.format(KE))
-#ax1.scatter(t1[:i], part.GetKineticEnergy(scale)[:i],color='k',marker='.')
-ax1.scatter(t1, part.GetForce(scale)[:,0],color='k',marker='.')
-ax1.scatter(t1, part.GetForce(scale)[:,1],color='r',marker='.')
-        
+MomentumT = part.GetMomentum(scale)
+EnergyK = part.GetKineticEnergy(scale)
+EnergyP = part.GetPotentialEnergy(scale)
+Lmomentum = part.GetAngularMomentum(scale)
+ax1.scatter(t1, part.GetForce(scale)[:,0],color='k',marker='.',label='Fx')
+ax1.scatter(t1, part.GetForce(scale)[:,1],color='r',marker='.',label='Fy')
+fig3 = plt.figure(figsize=(10,5))
+ax3 = fig3.add_subplot(221)
+ax4 = fig3.add_subplot(222)
+ax5 = fig3.add_subplot(223)
+ax3.plot(t1,MomentumT[:,0],label='px')
+ax3.plot(t1,MomentumT[:,1],label='py')
+ax4.plot(t1,EnergyK,label='Kinetic')
+ax4.plot(t1,EnergyP,label='Potential')
+ax4.plot(t1,EnergyK + EnergyP,label='Total')
+ax5.plot(t1,Lmomentum,label='Angular')
+ax3.legend()
+ax4.legend()
 Animation = anim.FuncAnimation(fig,Update,frames=len(t1),init_func=init)
 plt.show()
