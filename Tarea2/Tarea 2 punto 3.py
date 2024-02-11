@@ -38,7 +38,7 @@ y_real = (t**(-2))
 
 plt.figure()
 plt.scatter(t,y,label = 'Runge 2',color='r')
-plt.scatter(t,y_real,label = 'Real')
+#plt.scatter(t,y_real,label = 'Real')
 #plt.plot(t,y_int,label = 'odeint',color='b')
 plt.legend()
 plt.show()
